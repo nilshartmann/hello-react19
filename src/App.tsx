@@ -1,7 +1,6 @@
 /// <reference types="react/experimental" />
-import { Suspense, use, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+//     ^----- make TS aware of React 19
+import { Suspense, use, useActionState, useState } from "react";
 import "./App.css";
 
 function Waiting() {
@@ -19,8 +18,6 @@ function Data() {
 }
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <div>
@@ -28,8 +25,55 @@ function App() {
         <Suspense fallback={<Waiting />}>
           <Data />
         </Suspense>
+        <Register />
       </div>
     </>
+  );
+}
+
+type InitialFormState = {
+  lifecycle: "initial";
+};
+
+type SubmittedFormState = {
+  lifecycle: "submitted";
+  message: string;
+};
+
+type MyFormState = InitialFormState | SubmittedFormState;
+
+function handleForm(
+  prevState: MyFormState,
+  form: FormData
+): Promise<MyFormState> {
+  console.log("prevState", prevState);
+  console.log("form", form);
+
+  return new Promise((res) => {
+    setTimeout(
+      () => res({ lifecycle: "submitted", message: "Jo dat löppt" }),
+      2000
+    );
+  });
+}
+
+const initialState: MyFormState = {
+  lifecycle: "initial",
+};
+
+function Register() {
+  const [state, action, isPending] = useActionState(handleForm, initialState);
+
+  console.log("Current State", state);
+  console.log("Pending", isPending);
+
+  return (
+    <form action={action}>
+      <label>firstname:</label>
+      <input type="text" name="firstname" />
+      <button type="submit">Save</button>
+      {state.lifecycle === "submitted" && <p>{state.message}</p>}
+    </form>
   );
 }
 
