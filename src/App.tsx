@@ -1,6 +1,6 @@
 /// <reference types="react/experimental" />
 //     ^----- make TS aware of React 19
-import { Suspense, use, useActionState, useState } from "react";
+import { Suspense, use, useActionState } from "react";
 import "./App.css";
 
 function Waiting() {
@@ -14,14 +14,20 @@ const myDataPromise = new Promise<string>((res) => {
 function Data() {
   const x = use(myDataPromise);
 
-  return <h2>Data: {x}</h2>;
+  return (
+    <>
+      <title>Meine Daten</title>
+      <h2>Data: {x}</h2>
+    </>
+  );
 }
 
 function App() {
   return (
     <>
+      <title>Hallo React 19</title>
       <div>
-        <h1>Hallo Welt.</h1>
+        <h1>Hallo React 19</h1>
         <Suspense fallback={<Waiting />}>
           <Data />
         </Suspense>
